@@ -39,7 +39,7 @@ const HomePage = ({loggedUser}) => {
                                     <img src={`/images_db/${item.images[0]}`} className="img-fluid product-thumbnail" alt="Product 2" />
                                 <h3 className="product-title">{item.title}</h3>
                                 <div>
-                                    <strong className="product-price">{item.price}$</strong>
+                                    <strong className="product-price">{item.price}DT</strong>
                                 </div>
                                 <span className="icon-cross">
                                     <img src={addCircle} className="img-fluid" alt="Cross" />
@@ -57,7 +57,7 @@ const HomePage = ({loggedUser}) => {
                                     <img src={`/images_db/${item.images[0]}`} className="img-fluid product-thumbnail" alt="Product 2" />
                                     <h3 className="product-title">{item.title}</h3>
                                 <div>
-                                    <strong className="product-price">{item.price}</strong>
+                                    <strong className="product-price">{item.price}DT</strong>
                                 </div>
                                 <span className="icon-cross">
                                     <img src={addCircle} className="img-fluid" alt="Cross" />
@@ -72,7 +72,7 @@ const HomePage = ({loggedUser}) => {
                     </div>
                     <div className='row'>
                         <div className="col-md-12 col-lg-5 mb-5 mb-lg-0" data-aos="fade-right">
-                            <video src="/images/vd.mp4" autoPlay muted style={{ height: '700px' }}></video>
+                        <img src="/images/turbo.jpg" className=" w-100" style={{ height: '700px' }} />
                         </div>
                         {items && items.filter((item, idx) => idx==4 || idx==5).map(item => {
                             return(
@@ -81,7 +81,7 @@ const HomePage = ({loggedUser}) => {
                                 <img src={`/images_db/${item.images[0]}`} className="img-fluid product-thumbnail" alt="Product 2" />
                                 <h3 className="product-title">{item.title}</h3>
                                 <div>
-                                    <strong className="product-price">{item.price}</strong>
+                                    <strong className="product-price">{item.price}DT</strong>
                                 </div>
                                 <span className="icon-cross">
                                     <img src={addCircle} className="img-fluid" alt="Cross" />

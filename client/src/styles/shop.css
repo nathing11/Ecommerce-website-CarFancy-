@@ -119,7 +119,7 @@ a.more {
 .produit {
     display: flex;
     flex-wrap: wrap;
-    background-color: #29335c6e;
+    background-color:#A3A7B9;
     gap: 15px; /* Increased gap for better spacing */
     justify-content: center;
     padding: 20px; /* Added padding around the container */

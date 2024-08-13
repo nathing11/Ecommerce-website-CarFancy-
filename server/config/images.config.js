@@ -4,7 +4,7 @@ require('dotenv').config({path:'../.env'});
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        return cb(null,'C:/Users/User/Desktop/MERN_project_final/client/public/images_db')
+        return cb(null,'C:/Users/User/Desktop/New folder (3)/Ecommerce-website-CarFancy-/client/public/images_db')
     },
 
     filename: function (req, file, cb) {

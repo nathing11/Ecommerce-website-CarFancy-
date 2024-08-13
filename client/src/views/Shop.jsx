@@ -28,12 +28,12 @@ const Shops = ({loggedUser}) => {
                     <input type="text" name='search' id='srch' placeholder='Search' className='form-control' style={{ width: '150px', height: '30px' }} />
                     <a href="#cart" className="icon"><img src="/images/recherch.png" alt="" /></a>
                 </div>
-                <button  className='button text-dark'   onClick={() => chooseOption('carAccessories')}><i></i>Car Accessories</button>
+                <button  className='button text-dark'   onClick={() => chooseOption('t-shirt')}><i></i>TShirts</button>
+                <button  className='button text-dark'   onClick={() => chooseOption('carAccessorie')}><i></i>Car Accessories</button>
                 <button  className='button text-dark'   onClick={() => chooseOption('carCollectibles')}><i ></i>Car Collectibles</button>
                 <button  className='button text-dark'   onClick={() => chooseOption('CarMats')} ><i></i>Car Mats</button>
                 <button  className='button text-dark'   onClick={() => chooseOption('hotWheels')}><i></i>Hotwheels</button>
                 <button  className='button text-dark'   onClick={() => chooseOption('new')} ><i></i>New</button>
-                <button  className='button text-dark'   onClick={() => chooseOption('t-shirt')}><i></i>TShirts</button>
                 <button  className='button text-dark'   onClick={() => chooseOption('sweater')}><i></i>Sweater</button>
                 <button  className='button text-dark'   onClick={() => chooseOption('teckDeck')} ><i></i>Tech Deck</button>
             </div>
@@ -48,7 +48,7 @@ const Shops = ({loggedUser}) => {
                                             <a className="product-item" href="#">
                                                 <img src={`/images_db/${item.images[0]}`}className="img-fluid product-thumbnail" alt={item.title} />
                                                 <h3 className="product-title">{item.title}</h3>
-                                                <strong className="product-price">{item.price} dt</strong>
+                                                <strong className="product-price">{item.price}DT</strong>
                                                 <span className="icon-cross">
                                                     <img src={addCircle} className="img-fluid" alt="Cross" />
                                                 </span>

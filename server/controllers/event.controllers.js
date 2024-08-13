@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 module.exports.createEvent = async (req, res) => {
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'C:/Users/User/Desktop/MERN_project_final/client/public/images_db');
+            cb(null, 'C:/Users/User/Desktop/New folder (3)/Ecommerce-website-CarFancy-/client/public/images_db');
         },
 
         filename: function (req, file, cb) {

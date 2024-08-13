@@ -1,6 +1,7 @@
 
 .shop-container{
     display: flex;
+    background-color:#A3A7B9;
 }
 .navbar {
     height: 100px; 

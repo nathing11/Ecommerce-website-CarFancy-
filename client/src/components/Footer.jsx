@@ -39,14 +39,13 @@ const Footer = () => {
         <div class="roww">
           <a href="#"><i class="fa fa-facebook"></i></a>
           <a href="#"><i class="fa fa-instagram"></i></a>
-          <a href="#"><i class="fa fa-youtube"></i></a>
           <a href="#"><i class="fa fa-twitter"></i></a>
         </div>
 
         <div class="roww">
           <ul>
-            <li><a href="#">Contact us</a></li>
-            <li><a href="#">Our Services</a></li>
+            <li><a href="https://www.linkedin.com/in/amenallah-brahim-90991a2a1/">Contact us</a></li>
+            <li><a href="https://www.linkedin.com/in/amenallah-brahim-90991a2a1/">Our Services</a></li>
             <li><a href="#">Privacy Policy</a></li>
             <li><a href="#">Terms & Conditions</a></li>
             <li><a href="#">Career</a></li>
@@ -54,7 +53,7 @@ const Footer = () => {
         </div>
 
         <div class="roww">
-          INFERNO Copyright © 2021 Inferno - All rights reserved || Designed By: Mahesh
+          INFERNO Copyright © 2024 Inferno - All rights reserved || Designed By: Amenallah brahim
         </div>
       </div>
     </footer>
