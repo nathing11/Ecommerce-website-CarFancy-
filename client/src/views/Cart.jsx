@@ -3,19 +3,20 @@ import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/cart.css";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+
 const Cart = () => {
   const value = useContext(DataContext);
   const [cart, setCart] = value.cart;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [quatity, setQuatity] = useState(1);
-  const [thisProducts, setThisProducts] = useState(products);
+  const [quantities, setQuantities] = useState({});
   const [confirmed, setConfirmed] = useState(false);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     async function getItems() {
       try {
-        console.log("****************", cart);
         const itemIds = cart.map((element) => element._id);
         if (itemIds.length > 0) {
           const response = await axios.get("http://localhost:8000/api/item");
@@ -23,11 +24,16 @@ const Cart = () => {
             itemIds.includes(item._id)
           );
           setProducts(allItems);
-          setThisProducts(allItems);
+          
+          // Initialize quantities
+          const initialQuantities = {};
+          allItems.forEach(item => {
+            initialQuantities[item._id] = 1;
+          });
+          setQuantities(initialQuantities);
         }
       } catch (error) {
         console.error("Error fetching items:", error);
-        // Handle the error here (show a user-friendly message or log it)
       } finally {
         setLoading(false);
       }
@@ -35,83 +41,175 @@ const Cart = () => {
 
     getItems();
   }, [cart]);
-  console.log("44444444444444", cart,"444444444444",products)
-  const reduction = () => {
-    if (quatity > 0) {
-      setQuatity(quatity - 1);
-    }
-  };
-  const increase = (q) => {
-    if (quatity < q) {
-      setQuatity(quatity + 1);
-    }
+
+  useEffect(() => {
+    // Calculate total whenever quantities or products change
+    let newTotal = 0;
+    products.forEach(product => {
+      newTotal += product.price * (quantities[product._id] || 1);
+    });
+    setTotal(newTotal);
+  }, [quantities, products]);
+
+  const updateQuantity = (productId, newQuantity) => {
+    setQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(1, newQuantity)
+    }));
   };
 
   const removeProduct = (productId) => {
     const updatedCart = cart.filter((product) => product._id !== productId);
     setCart(updatedCart);
+    
+    // Remove from quantities state
+    setQuantities(prev => {
+      const newQuantities = {...prev};
+      delete newQuantities[productId];
+      return newQuantities;
+    });
   };
 
   const handleConfirm = () => {
-    console.log("Confirm button clicked. Implement your logic here.");
     setConfirmed(true);
   };
 
-  return (
-    <div>
-      {loading && <p>Loading...</p>}
-      {!loading && thisProducts.length > 0 ? (
-        thisProducts.map((product) => (
-          <div className="details cart" key={product._id}>
-            <div
-              className="img-container"
-              style={{ backgroundImage: `url(${product.images})` }}
-            >
-              <img
-                style={{ maxWidth: "40%", maxHeight: "50%" }}
-                src={`/images_db/${product.images}`}
-                calt=""
-              />
-            </div>
-            <div className="box-details">
-              <h2 title={product.title}>{product.title}</h2>
-              <h3 className="price">{product.price} DT</h3>
-              <p>{product.description}</p>
-              <p>{product.content}</p>
-              <div className="amount">
-                <button className="count" onClick={() => reduction()}>
-                  {" "}
-                  -{" "}
-                </button>
-                <span>{quatity}</span>
-                <button
-                  className="count"
-                  onClick={() => increase(product.count)}
-                >
-                  {" "}
-                  +{" "}
-                </button>
-              </div>
-              <Link to="/shop"
-                className="delete"
-                onClick={() => removeProduct(product._id)}
-              >
-                Go Back
-              </Link>
-            </div>
-            {cart.length > 0 && !confirmed && (
-              <div className="confirmation">
-                <button onClick={handleConfirm}>
-                  Confirm and Proceed to Payment
-                </button>
-              </div>
-            )}
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.3 }
+    },
+    exit: { 
+      opacity: 0, 
+      x: -50,
+      transition: { duration: 0.2 }
+    }
+  };
 
-            {confirmed && <Payment pquantity={quatity} product={product} removeProduct={removeProduct}/>}
-          </div>
-        ))
+  return (
+    <div className="cart-container">
+      {loading ? (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
       ) : (
-        <p>Your cart is empty.</p>
+        <>
+          <h1 className="cart-title">Your Shopping Cart</h1>
+          
+          {products.length > 0 ? (
+            <>
+              <div className="cart-items">
+                <AnimatePresence>
+                  {products.map((product) => (
+                    <motion.div
+                      key={product._id}
+                      className="cart-item"
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      layout
+                    >
+                      <div className="item-image-container">
+                        <motion.img
+                          whileHover={{ scale: 1.05 }}
+                          src={`/images_db/${product.images}`}
+                          alt={product.title}
+                          className="item-image"
+                        />
+                      </div>
+                      
+                      <div className="item-details">
+                        <h3 className="item-title">{product.title}</h3>
+                        <p className="item-description">{product.description}</p>
+                        <div className="item-price">${product.price.toFixed(2)}</div>
+                        
+                        <div className="quantity-controls">
+                          <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            className="quantity-btn"
+                            onClick={() => updateQuantity(product._id, (quantities[product._id] || 1) - 1)}
+                          >
+                            -
+                          </motion.button>
+                          <span className="quantity-value">{quantities[product._id] || 1}</span>
+                          <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            className="quantity-btn"
+                            onClick={() => updateQuantity(product._id, (quantities[product._id] || 1) + 1)}
+                          >
+                            +
+                          </motion.button>
+                        </div>
+                        
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="remove-btn"
+                          onClick={() => removeProduct(product._id)}
+                        >
+                          Remove
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+              
+              <div className="cart-summary">
+                <div className="total-section">
+                  <span>Total:</span>
+                  <span className="total-price">${total.toFixed(2)}</span>
+                </div>
+                
+                {!confirmed && (
+                  <motion.button
+                    whileHover={{ scale: 1.02, boxShadow: "0 0 10px rgba(0,0,0,0.2)" }}
+                    whileTap={{ scale: 0.98 }}
+                    className="checkout-btn"
+                    onClick={handleConfirm}
+                  >
+                    Proceed to Checkout
+                  </motion.button>
+                )}
+                
+                <Link to="/shop" className="continue-shopping">
+                  Continue Shopping
+                </Link>
+              </div>
+              
+              {confirmed && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="payment-section"
+                >
+                  <Payment 
+                    pquantity={quantities} 
+                    products={products} 
+                    removeProduct={removeProduct}
+                    total={total}
+                  />
+                </motion.div>
+              )}
+            </>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="empty-cart"
+            >
+              <div className="empty-cart-icon">🛒</div>
+              <h2>Your cart is empty</h2>
+              <p>Looks like you haven't added anything to your cart yet</p>
+              <Link to="/shop" className="shop-btn">
+                Start Shopping
+              </Link>
+            </motion.div>
+          )}
+        </>
       )}
     </div>
   );

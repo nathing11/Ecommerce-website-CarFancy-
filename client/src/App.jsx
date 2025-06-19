@@ -28,7 +28,7 @@ function App() {
     });
     AOS.refresh();
   }, [])
-  const [loggedUser, setLoggedUser] = useState(null); // Initialize loggedUser state
+  const [loggedUser, setLoggedUser] = useState(null); 
   const token = localStorage.getItem('token')
   useEffect(() => {
     const GetLoggedUser = async () => {
@@ -63,7 +63,7 @@ function App() {
           <Route path="/cevent" element={<CreateEvent/>}/>
           <Route path="/cblog" element={<BlogCreate/>}/>
         </Routes>
-        <Footer />
+
       </DataProvider>
     </>
   )

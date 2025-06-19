@@ -1,90 +1,204 @@
 import { useState, useEffect } from "react";
-import AllUsersTable from '../components/AllUsersTable';
-import '../styles/style.css';
 import axios from "axios";
 import { Link } from 'react-router-dom';
+import { 
+  FiUsers, FiShoppingBag, FiCalendar, 
+  FiEdit, FiPieChart, FiLogIn, 
+  FiUserPlus, FiMenu, FiX 
+} from "react-icons/fi";
+import { RiDashboardLine } from "react-icons/ri";
+import AllUsersTable from '../components/AllUsersTable';
 import user from '../assets/admin.png'
+import '../styles/style.css';
 
-const AdminDashboard = ({loggedUser}) => {
+const AdminDashboard = ({ loggedUser }) => {
     const [users, setUsers] = useState([]);
-
-    console.log(users);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/api/users')
-            .then((response) => setUsers(response.data))
-            .catch((error) => console.log(error));
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/api/users');
+                setUsers(response.data);
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+                setIsLoading(false);
+            }
+        };
+
+        fetchUsers();
     }, []);
 
-    const handleDelete = id => {
-        axios.delete(`http://localhost:8000/api/user/${id}`)
-            .then(() => {
-                axios.get('http://localhost:8000/api/users')
-                    .then((response) => setUsers(response.data))
-                    .catch((error) => console.log(error));
-            })
-            .catch(err => console.log(err));
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8000/api/user/${id}`);
+            const response = await axios.get('http://localhost:8000/api/users');
+            setUsers(response.data);
+        } catch (err) {
+            console.error("Error deleting user:", err);
+        }
     };
 
     return (
-        <div className='container-xxl position-relative bg-white d-flex p-0'>
-            <div className="sidebar pe-4 pb-3">
-                <nav className="navbar bg-light navbar-light">
-                    <a href="index.html" className="navbar-brand mx-4 mb-3">
-                        <h3 className="text-primary"><i className="fas fa-user-tie me-2"></i>Welcome</h3>
-                    </a>
-                    <div className="d-flex align-items-center ms-4 mb-4">
-                        <div className="position-relative">
-                        <img className="rounded-circle" src={user} width={50}/>
-                            <div className="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                        </div>
-                        <div className="ms-3">
-                            <span>Admin</span>
-                        </div>
+        <div className={`admin-wrapper ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+            {/* Sidebar */}
+            <div className={`admin-sidebar bg-dark ${sidebarCollapsed ? 'collapsed' : ''}`}>
+                <div className="sidebar-header d-flex align-items-center justify-content-between p-3">
+                    <Link to="/" className="navbar-brand text-white d-flex align-items-center">
+                        <RiDashboardLine className="me-2" size={24} />
+                        {!sidebarCollapsed && <span className="fw-bold">AdminPro</span>}
+                    </Link>
+                    <button 
+                        className="btn btn-link text-white p-0"
+                        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    >
+                        {sidebarCollapsed ? <FiMenu size={20} /> : <FiX size={20} />}
+                    </button>
+                </div>
+
+                <div className="user-profile p-3 d-flex align-items-center">
+                    <div className="position-relative me-3">
+                        <img 
+                            src={user} 
+                            alt="Admin" 
+                            className="rounded-circle" 
+                            width={40} 
+                            height={40}
+                        />
+                        <span className="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white p-1"></span>
                     </div>
-                    <div className="navbar-nav w-100">
-                        <a href="index.html" className="nav-item nav-link active"><i className="fa fa-dashboard me-2"></i>Dashboard</a>
-                        <div className="nav-item dropdown">
-                            <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i className="fa fa-edit me-2"></i>Create
+                    {!sidebarCollapsed && (
+                        <div>
+                            <div className="text-white fw-bold">{loggedUser?.firstName || 'Admin'}</div>
+                            <small className="text-muted">Super Admin</small>
+                        </div>
+                    )}
+                </div>
+
+                <nav className="sidebar-nav">
+                    <ul className="nav flex-column">
+                        <li className="nav-item">
+                            <Link to="#" className="nav-link active">
+                                <RiDashboardLine className="me-3" size={18} />
+                                {!sidebarCollapsed && <span>Dashboard</span>}
+                            </Link>
+                        </li>
+
+                        <li className="nav-item dropdown">
+                            <a 
+                                className="nav-link dropdown-toggle" 
+                                data-bs-toggle="collapse" 
+                                href="#createDropdown"
+                            >
+                                <FiEdit className="me-3" size={18} />
+                                {!sidebarCollapsed && <span>Create</span>}
                             </a>
-                            <div className="dropdown-menu bg-transparent border-0">
-                                <Link to="/merch" className="dropdown-item">
-                                    <i className="fa fa-shopping-bag me-2"></i>Create Merch
-                                </Link>
-                                <Link to="/cevent" className="dropdown-item">
-                                    <i className="fa fa-calendar me-2"></i>Create Event
-                                </Link>
-                                <Link to="/cblog" className="dropdown-item">
-                                    <i className="fa fa-pencil me-2"></i>Create Blog
-                                </Link>
+                            <div className="collapse" id="createDropdown">
+                                <ul className="nav flex-column ps-5">
+                                    <li className="nav-item">
+                                        <Link to="/merch" className="nav-link">
+                                            <FiShoppingBag className="me-2" size={16} />
+                                            {!sidebarCollapsed && <span>Merch</span>}
+                                        </Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link to="/cevent" className="nav-link">
+                                            <FiCalendar className="me-2" size={16} />
+                                            {!sidebarCollapsed && <span>Event</span>}
+                                        </Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link to="/cblog" className="nav-link">
+                                            <FiEdit className="me-2" size={16} />
+                                            {!sidebarCollapsed && <span>Blog</span>}
+                                        </Link>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                        <Link to="#" className="nav-item nav-link"><i className="fa fa-table me-2"></i>Tables</Link>
-                        <Link to="/login" className="nav-item nav-link"><i className="fa fa-user me-2"></i>Sign In</Link>
-                        <Link to="/registration" className="nav-item nav-link"><i className="fa fa-user-plus me-2"></i>Sign Up</Link>
-                    </div>
+                        </li>
+
+                        <li className="nav-item">
+                            <Link to="#" className="nav-link">
+                                <FiPieChart className="me-3" size={18} />
+                                {!sidebarCollapsed && <span>Analytics</span>}
+                            </Link>
+                        </li>
+
+                        <li className="nav-item">
+                            <Link to="/login" className="nav-link">
+                                <FiLogIn className="me-3" size={18} />
+                                {!sidebarCollapsed && <span>Sign In</span>}
+                            </Link>
+                        </li>
+
+                        <li className="nav-item">
+                            <Link to="/registration" className="nav-link">
+                                <FiUserPlus className="me-3" size={18} />
+                                {!sidebarCollapsed && <span>Sign Up</span>}
+                            </Link>
+                        </li>
+                    </ul>
                 </nav>
             </div>
-            <div className='content'>
-                <nav className="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
-                    <a href="#" className="sidebar-toggler flex-shrink-0">
-                        <i className="fa fa-bars"></i>
-                    </a>
-                    <div className="navbar-nav align-items-center ms-auto">
-                            <a href="#" className="nav-link " data-bs-toggle="dropdown">
-                            <img className="rounded-circle" src={user} width={50}/>
-                                <span className="d-none d-lg-inline-flex">Admin</span>
-                            </a>
+
+            {/* Main Content */}
+            <div className="admin-content">
+                {/* Top Navbar */}
+                <nav className="navbar navbar-expand bg-light navbar-light sticky-top shadow-sm">
+                    <div className="container-fluid">
+                        <button 
+                            className="navbar-toggler border-0" 
+                            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                        >
+                            <FiMenu size={20} />
+                        </button>
+                        <div className="navbar-nav ms-auto">
+                            <div className="nav-item dropdown">
+                                <a 
+                                    href="#" 
+                                    className="nav-link dropdown-toggle" 
+                                    data-bs-toggle="dropdown"
+                                >
+                                    <img 
+                                        src={user} 
+                                        alt="User" 
+                                        className="rounded-circle me-2" 
+                                        width={32}
+                                    />
+                                    <span className="d-none d-lg-inline">Admin</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </nav>
-                <div className="container-fluid pt-4 px-4">
-                    <div className="bg-light text-center rounded p-4">
-                        <div className="d-flex align-items-center justify-content-between mb-4">
-                            <h6 className="mb-0">Recent Sales</h6>
+
+                {/* Content Area */}
+                <div className="container-fluid p-4">
+                    <div className="card shadow-sm border-0">
+                        <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3">
+                            <h5 className="mb-0">User Management</h5>
+                            <button 
+                                className="btn btn-sm btn-primary"
+                                onClick={() => window.location.reload()}
+                            >
+                                Refresh Data
+                            </button>
                         </div>
-                        <div className="table-responsive">
-                            <AllUsersTable />
+                        <div className="card-body">
+                            {isLoading ? (
+                                <div className="text-center py-5">
+                                    <div className="spinner-border text-primary" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p className="mt-2">Loading users...</p>
+                                </div>
+                            ) : (
+                                <div className="table-responsive">
+                                    <AllUsersTable users={users} onDelete={handleDelete} />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

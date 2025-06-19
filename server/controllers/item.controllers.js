@@ -4,24 +4,23 @@ const path = require('path');
 const pics_path = process.env.path;
 const { v4: uuidv4 } = require('uuid');
 module.exports.createItem = async (req, res) => {
+
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, 'C:/Users/User/Desktop/New folder (3)/Ecommerce-website-CarFancy-/client/public/images_db');
+            cb(null, 'C:/Users/Lenovo/Desktop/Nouveau dossier (5)/Ecommerce-website-CarFancy-/client/public/images_db');
         },
-
         filename: function (req, file, cb) {
             cb(null, file.originalname);
         },
     });
 
-    const upload = multer({ storage: storage }).array('files', 10); // Assuming you are using an array of files
+    const upload = multer({ storage: storage }).array('files', 10); 
 
     upload(req, res, async function (err) {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
 
-        // Assuming files array is available in req.files
         const paths = req.files.map(file => file.filename);
 
         try {
